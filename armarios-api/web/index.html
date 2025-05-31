@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Controlo de Acessos a Armários Outdoor</title>
+  <style>
+    body 
+    {
+      position: relative;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 30px;
+      overflow: hidden;
+    }
+
+    body::before 
+    {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('/static/mapa.png');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.5);
+      z-index: -1;
+    }
+    body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 100, 255, 0.2); 
+  z-index: -1;
+}
+
+    #status-box 
+    {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #b94c4c;
+      border: 5px solid #321919;
+      border-radius: 6px;
+      padding: 8px 15px;
+      font-weight: bold;
+      font-size: 1em;
+      color: white;
+      box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+      z-index: 1001;
+    }
+
+    #titulo-caixa
+    {
+      background-color: #eee;
+      border: 4px solid #321919;
+      border-radius: 10px;
+      display: inline-block;
+      padding: 15px 30px;
+      margin-bottom: 30px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #container 
+    {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 40px;
+    }
+
+    #container2, #container3, #container4, #container5 , #container6
+    {
+      position: fixed;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      right: 10px;
+      z-index: 1001;
+    }
+    #container2 {top: 20px;}
+    #container3 {top: 80px;}
+    #container4 {top: 140px;}
+    #container5 {top: 200px;}
+    #container6 {top: 260px;}
+   
+    .status-text 
+    {
+      color: black;
+      font-weight: bold;
+      background-color: rgb(255, 250, 250);
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+    #quadrado, #quadrado2, #quadrado3, #quadrado4, #quadrado5, #quadrado6 
+    {
+      width: 70px;
+      height: 70px;
+      border-radius: 4px;
+      border: 3px solid #321919;
+    }
+
+    #quadrado 
+    {
+      transition: background-color 0.5s ease;
+      background-color: red;
+    }
+
+    #quadrado2 {background-color: green;}
+    #quadrado3 {background-color: red;}
+    #quadrado4 {background-color: #bd5800;}
+    #quadrado5 {background-color: #67ff67;}
+    #quadrado6 {background-color: yellow;}
+
+    #id-armario 
+    {
+      font-size: 1.5em;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: 3px solid #321919;
+      border-radius: 8px;
+      background-color: #eee;
+      display: inline-block;
+      min-width: 120px;
+      text-align: center;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #logo-portodigital 
+    {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 200px;
+      height: auto;
+      opacity: 0.8;
+      z-index: 1000;
+    }
+    #historico-container 
+    {
+      position: fixed;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      max-height: 350px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.9);
+      border: 5px solid #321919;
+      border-radius: 13px;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      z-index: 1001;
+      text-align: left;
+  }
+
+  #historico-container h2 
+  {
+  margin: 0 0 10px;
+  font-size: 1.2em;
+  color: #321919;
+  }
+
+  #tabela-historico
+  {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  }
+
+#tabela-historico th,#tabela-historico td
+ {
+  border-bottom: 1px solid #ddd;
+  padding: 4px 6px;
+ }
+
+#tabela-historico th 
+{
+  border-bottom: 2px solid #321919;
+}
+
+  </style>
+</head>
+<body>
+  <div id="status-box">⏳ A obter estado...</div>
+  <div id="titulo-caixa"><h1>Controlo de Acessos de Armários Outdoor</h1></div>
+
+  <div id="container"><div id="quadrado"></div><div id="id-armario">Armário --</div></div>
+  <div id="container2"><span class="status-text">Fecho Permitido</span><div id="quadrado2"></div></div>
+  <div id="container3"><span class="status-text">Fecho Negado</span><div id="quadrado3"></div></div><div id="container4"><span class="status-text">Aberto à Espera de autenticação</span><div id="quadrado4"></div></div>
+  <div id="container5"><span class="status-text">Aberto Autorizado</span><div id="quadrado5"></div></div>
+  <div id="container6"><span class="status-text">Aberto Não Autorizado</span><div id="quadrado6"></div></div>
+  <div id="historico-container"><h2>Últimos Acessos</h2><table id="tabela-historico">
+  <thead><tr><th>UID</th><th>Abertura</th><th>Fecho</th><th>Acesso</th></tr></thead>
+  <tbody></tbody></table></div>
+
+  <img id="logo-portodigital" src="/static/portodigital.png" />
+
+  <script>
+    async function atualizarQuadrado() 
+    {
+      try 
+      {
+        const res = await fetch('/estado');
+        const dados = await res.json();
+        const quadrado = document.getElementById('quadrado');
+        const idArmario = document.getElementById('id-armario');
+        const statusBox = document.getElementById('status-box');
+
+        switch (dados.cor) 
+        {
+          case 'vermelho':
+            quadrado.style.backgroundColor = 'red';
+            statusBox.textContent = '❌ Fecho Sem Permissão';
+            break;
+          case 'azul':
+            quadrado.style.backgroundColor = '#bd5800';
+            statusBox.textContent = '⏳ À espera de autenticação do utilizador';
+            break;
+          case 'castanho':
+            quadrado.style.backgroundColor = '#67ff67';
+            statusBox.textContent = '✅ Porta aberta com autorização';
+            break;
+          case 'amarelo':
+            quadrado.style.backgroundColor = 'yellow';
+            statusBox.textContent = '⚠️ Porta aberta sem autorização';
+            break;
+          case 'verde':
+            quadrado.style.backgroundColor = 'green';
+            statusBox.textContent = '✅ Fecho Permitido';
+            break;
+        }
+
+        idArmario.textContent = `Armário ${dados.id_armario}`;
+      } catch (e) {
+        console.error('Erro ao buscar estado:', e);
+        document.getElementById('status-box').textContent = 'Estado Indisponível';
+      }
+    }
+    async function atualizarHistorico() {
+  try {
+    const res = await fetch('/historico');
+    if (!res.ok) throw new Error("Erro ao obter histórico");
+    const { acessos } = await res.json();
+
+    const tbody = document.querySelector('#tabela-historico tbody');
+    tbody.innerHTML = '';
+
+    acessos.forEach(({ uid, abertura, fecho, tipo }) => {
+      const linha = `
+        <tr>
+          <td style="padding:4px;">${uid}</td><td style="padding:4px;">${abertura}</td><td style="padding:4px;">${fecho || '—'}</td>
+          <td style="padding:4px; color:${tipo === 'permitido' ? 'green' : 'red'};">
+            ${tipo === 'permitido' ? '✅ Permitido' : '❌ Negado'}
+          </td>
+        </tr>
+`;
+      tbody.insertAdjacentHTML('beforeend', linha);
+    });
+  } catch (error) 
+  {
+    console.error("Erro ao atualizar histórico:", error);
+  }
+}
+
+    setInterval(atualizarQuadrado, 5000);
+    atualizarQuadrado();
+
+    setInterval(atualizarHistorico, 5000);
+    atualizarHistorico();
+  </script>
+</body>
+</html>
+
+
